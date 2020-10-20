@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
 import 'dart:convert';
-import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:select_form_field/select_form_field.dart';
 
-class AddKonsultasi extends StatefulWidget {
+class EditKonsultasi extends StatefulWidget {
   @override
-  AddKonsultasiState createState() => AddKonsultasiState();
+  EditKonsultasiState createState() => EditKonsultasiState();
 }
 
-class AddKonsultasiState extends State<AddKonsultasi> {
+class EditKonsultasiState extends State<EditKonsultasi> {
   DateTime _dueDate = DateTime.now();
   DateTime dateNow = DateTime.now();
   String tanggal = '';
@@ -61,7 +60,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
 
     print(resBody);
 
-    return "Success";
+    return "Sucess";
   }
 
   Future<Null> _selectDueDate(BuildContext context) async {
@@ -93,7 +92,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
     return new Scaffold(
         backgroundColor: Colors.blueGrey[50],
         appBar: AppBar(
-          title: Text("Tambah Konsultasi"),
+          title: Text("Ubah Konsultasi"),
           backgroundColor: Colors.blueGrey,
         ),
         body: Center(
@@ -110,11 +109,6 @@ class AddKonsultasiState extends State<AddKonsultasi> {
               new ListTile(
                 leading: const Icon(Icons.bookmark_border),
                 title: new TextField(
-                  onChanged: (String str) {
-                    setState(() {
-                      judul = str;
-                    });
-                  },
                   decoration: new InputDecoration(
                     hintText: "Judul",
                   ),
@@ -123,11 +117,6 @@ class AddKonsultasiState extends State<AddKonsultasi> {
               new ListTile(
                 leading: const Icon(Icons.library_books_outlined),
                 title: new TextField(
-                  onChanged: (String str) {
-                    setState(() {
-                      keterangan = str;
-                    });
-                  },
                   decoration: new InputDecoration(
                     hintText: "Keterangan",
                   ),
@@ -135,16 +124,8 @@ class AddKonsultasiState extends State<AddKonsultasi> {
               ),
               new ListTile(
                 leading: const Icon(Icons.today),
-                title: Text("Tanggal Konsultasi"),
-                trailing: new InkWell(
-                  onTap: () => _selectDueDate(context),
-                  child: Text(
-                    tanggal,
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
+                onTap: () => _selectDueDate(context),
+                title: const Text('Tanggal'),
               ),
               new ListTile(
                 leading: const Icon(Icons.person_add),
@@ -170,7 +151,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
                     padding:
                         EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
                     child: Text(
-                      "Tambah Konsultasi",
+                      "Simpan Konsultasi",
                       textDirection: TextDirection.ltr,
                       style: TextStyle(
                         color: Colors.white,
@@ -184,18 +165,19 @@ class AddKonsultasiState extends State<AddKonsultasi> {
                   disabledColor: Colors.grey,
                   shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(20.0)),
-                  onPressed: () => addData()),
+                  onPressed: () {})
             ],
           ),
         ));
   }
 
   var token;
-  void addData() async {
+  void editData(int id) async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     token = jsonDecode(localStorage.getString('token'))['token'];
     final String apiUrl = "https://sikapnew.tech/api";
     String myUrl = "$apiUrl/konsultasi/";
+
     http.post(myUrl, headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'

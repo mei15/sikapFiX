@@ -2,19 +2,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sikap/network/rest_api.dart';
+import 'package:sikap/screens/home/home.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
 import 'package:sikap/screens/mahasiswa/mahasiswa.dart';
-import 'package:sikap/screens/home/home.dart';
 import 'package:sikap/screens/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sikap/screens/profil/profil.dart';
 
-class Dosen extends StatefulWidget {
+class DosenScreen extends StatefulWidget {
   @override
   _DosenState createState() => _DosenState();
 }
 
-class _DosenState extends State<Dosen> {
+class _DosenState extends State<DosenScreen> {
   String email;
 
   @override
@@ -44,6 +44,7 @@ class _DosenState extends State<Dosen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blueGrey[50],
       drawer: Drawer(
         child: ListView(
           // Important: Remove any padding from the ListView.
@@ -87,6 +88,13 @@ class _DosenState extends State<Dosen> {
               title: Text('Konsultasi'),
               onTap: () {
                 konsultasi();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Dashboard'),
+              onTap: () {
+                home();
               },
             ),
             ListTile(
@@ -139,17 +147,22 @@ class _DosenState extends State<Dosen> {
   }
 
   void dosen() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Dosen()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DosenScreen()));
+  }
+
+  void home() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   void mahasiswa() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Mahasiswa()));
+        context, MaterialPageRoute(builder: (context) => MahasiswaScreen()));
   }
 
   void konsultasi() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Konsultasi()));
+        context, MaterialPageRoute(builder: (context) => KonsultasiScreen()));
   }
 
   void profil() {

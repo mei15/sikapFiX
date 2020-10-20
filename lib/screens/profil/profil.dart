@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/dosen/dosen.dart';
+import 'package:sikap/screens/home/home.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
 import 'package:sikap/screens/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,14 +17,9 @@ class Profil extends StatefulWidget {
 
 class _ProfilState extends State<Profil> {
   String email;
+  String username;
   String first_name;
   String last_name;
-  String nim;
-  String nip;
-  String prodi;
-  String username;
-  var token;
-
   @override
   void initState() {
     _loadUserData();
@@ -33,27 +29,26 @@ class _ProfilState extends State<Profil> {
   _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
-    token = jsonDecode(localStorage.getString('token'))['token'];
+    var data = jsonDecode(localStorage.getString('data'));
 
-    if (user != null && token != null) {
+    if (user != null && data != null) {
       setState(() {
         email = user['email'];
-        first_name = user['first_name'];
-        last_name = user['last_name'];
-        nip = user['nip'];
-        nim = user['nim'];
         username = user['username'];
-        prodi = user['prodi'];
+        first_name = data['first_name'];
+        last_name = data['last_name'];
       });
     }
   }
 
+  var token;
+  var user;
   @override
   Widget build(BuildContext context) {
     final _width = MediaQuery.of(context).size.width;
     final _height = MediaQuery.of(context).size.height;
     final String imgUrl =
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1200px-User_font_awesome.svg.png';
+        'https://upload.wikimedia.org/wikipedia/commons/5/55/Logo-unsoed-2017-warna.png';
 
     return new Stack(
       children: <Widget>[
@@ -82,7 +77,7 @@ class _ProfilState extends State<Profil> {
                 padding: EdgeInsets.zero,
                 children: <Widget>[
                   new Container(
-                    color: Colors.blueGrey,
+                    color: Colors.blueGrey[50],
                     child: UserAccountsDrawerHeader(
                       accountName: new Text("SIKAP"),
                       accountEmail: new Text("$email"),
@@ -122,6 +117,13 @@ class _ProfilState extends State<Profil> {
                     },
                   ),
                   ListTile(
+                    leading: Icon(Icons.home),
+                    title: Text('Dashboard'),
+                    onTap: () {
+                      home();
+                    },
+                  ),
+                  ListTile(
                     title: Text('Keluar'),
                     trailing: Icon(Icons.input),
                     onTap: () {
@@ -152,7 +154,7 @@ class _ProfilState extends State<Profil> {
                     height: _height / 25.0,
                   ),
                   new Text(
-                    '$first_name +" "+$last_name',
+                    '$first_name  $last_name',
                     style: new TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: _width / 15,
@@ -162,7 +164,7 @@ class _ProfilState extends State<Profil> {
                     padding: new EdgeInsets.only(
                         top: _height / 30, left: _width / 8, right: _width / 8),
                     child: new Text(
-                      '$email',
+                      '$username',
                       style: new TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: _width / 25,
@@ -174,13 +176,14 @@ class _ProfilState extends State<Profil> {
                     height: _height / 30,
                     color: Colors.white,
                   ),
-                  new Row(
+                  new Center(
+                      child: new Column(
                     children: <Widget>[
-                      rowCell(0, '$username'),
-                      rowCell(0, '$nim or $nip'),
-                      rowCell(0, '$prodi'),
+                      Text(
+                        '$email',
+                      ),
                     ],
-                  ),
+                  )),
                   new Divider(height: _height / 30, color: Colors.white),
                   new Padding(
                     padding: new EdgeInsets.only(
@@ -195,7 +198,7 @@ class _ProfilState extends State<Profil> {
                           new SizedBox(
                             width: _width / 30,
                           ),
-                          new Text('Created by H1D016021')
+                          new Text('created by H1D016021')
                         ],
                       )),
                       color: Colors.blueGrey,
@@ -203,38 +206,9 @@ class _ProfilState extends State<Profil> {
                   ),
                 ],
               ),
-            ))
+            )),
       ],
     );
-  }
-
-  void logout() async {
-    var res = await Network().getData('/logout');
-    var body = json.decode(res.body);
-    if (body['success']) {
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.remove('user');
-      localStorage.remove('token');
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
-    }
-  }
-
-  void dosen() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Dosen()));
-  }
-
-  void mahasiswa() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Mahasiswa()));
-  }
-
-  void konsultasi() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Konsultasi()));
-  }
-
-  void profil() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Profil()));
   }
 
   Widget rowCell(int count, String type) => new Expanded(
@@ -249,4 +223,38 @@ class _ProfilState extends State<Profil> {
                   color: Colors.white, fontWeight: FontWeight.normal))
         ],
       ));
+
+  void logout() async {
+    var res = await Network().getData('/logout');
+    var body = json.decode(res.body);
+    if (body['success']) {
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.remove('user');
+      localStorage.remove('token');
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+    }
+  }
+
+  void dosen() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DosenScreen()));
+  }
+
+  void home() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+  }
+
+  void mahasiswa() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => MahasiswaScreen()));
+  }
+
+  void konsultasi() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => KonsultasiScreen()));
+  }
+
+  void profil() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Profil()));
+  }
 }
