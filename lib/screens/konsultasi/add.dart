@@ -50,24 +50,6 @@ class AddKonsultasiState extends State<AddKonsultasi> {
     }
   }
 
-  // final String url = "https://sikapnew.tech/api/dosen";
-
-  // List data = List(); //edited line
-
-  // Future<String> getSWData() async {
-  //   var res = await http
-  //       .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
-  //   var resBody = json.decode(res.body)['dosen'];
-
-  //   setState(() {
-  //     data = resBody;
-  //   });
-
-  //   print(resBody);
-
-  //   return "Success";
-  // }
-
   String _baseUrl = "https://sikapnew.tech/api/";
   String _valDosen;
   List<dynamic> _dataDosen = List();
@@ -106,7 +88,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   void initState() {
     super.initState();
     // this.getSWData();
-    getDosen();
+    this.getDosen();
     _loadUserData();
     tanggal = "${_dueDate.day}/${_dueDate.month}/${_dueDate.year}";
   }
