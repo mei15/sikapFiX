@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/dosen/dosen.dart';
 import 'package:sikap/screens/home/home.dart';
+import 'package:sikap/screens/konsultasi/konsuldosen.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
 import 'package:sikap/screens/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ class MahasiswaScreen extends StatefulWidget {
 
 class _MahasiswaState extends State<MahasiswaScreen> {
   String email;
+  String nim;
 
   @override
   void initState() {
@@ -26,19 +28,27 @@ class _MahasiswaState extends State<MahasiswaScreen> {
   _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
+    var data = jsonDecode(localStorage.getString('data'));
 
     if (user != null) {
       setState(() {
         email = user['email'];
+        nim = data['nim'];
       });
     }
   }
 
+  var token;
   final String apiUrl = "https://sikapnew.tech/api/mahasiswa";
 
   Future<List<dynamic>> _fecthDataMahasiswa() async {
-    var result = await http.get(apiUrl);
-    return json.decode(result.body)['mahasiswa'];
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    token = jsonDecode(localStorage.getString('token'))['token'];
+    var result = await http.get(apiUrl, headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    });
+    return json.decode(result.body);
   }
 
   @override
@@ -87,7 +97,12 @@ class _MahasiswaState extends State<MahasiswaScreen> {
               leading: Icon(Icons.calendar_today),
               title: Text('Konsultasi'),
               onTap: () {
-                konsultasi();
+                if (nim == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => KonsulDosen()));
+                } else {
+                  konsultasi();
+                }
               },
             ),
             ListTile(

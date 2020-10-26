@@ -8,6 +8,7 @@ import 'package:sikap/screens/mahasiswa/mahasiswa.dart';
 import 'package:sikap/screens/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sikap/screens/profil/profil.dart';
+import 'package:sikap/screens/konsultasi/konsuldosen.dart';
 
 class DosenScreen extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class DosenScreen extends StatefulWidget {
 
 class _DosenState extends State<DosenScreen> {
   String email;
+  String nim;
 
   @override
   void initState() {
@@ -26,19 +28,27 @@ class _DosenState extends State<DosenScreen> {
   _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
+    var data = jsonDecode(localStorage.getString('data'));
 
     if (user != null) {
       setState(() {
         email = user['email'];
+        nim = data['nim'];
       });
     }
   }
 
+  var token;
   final String apiUrl = "https://sikapnew.tech/api/dosen";
 
   Future<List<dynamic>> _fecthDataDosen() async {
-    var result = await http.get(apiUrl);
-    return json.decode(result.body)['dosen'];
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    token = jsonDecode(localStorage.getString('token'))['token'];
+    var result = await http.get(apiUrl, headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    });
+    return json.decode(result.body);
   }
 
   @override
@@ -87,7 +97,12 @@ class _DosenState extends State<DosenScreen> {
               leading: Icon(Icons.calendar_today),
               title: Text('Konsultasi'),
               onTap: () {
-                konsultasi();
+                if (nim == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => KonsulDosen()));
+                } else {
+                  konsultasi();
+                }
               },
             ),
             ListTile(

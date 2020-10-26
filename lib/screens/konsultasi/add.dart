@@ -22,13 +22,13 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   String dosen_id = '';
   String mahasiswa_id = '';
 
-  String _mySelection;
-
   String email;
   String nim;
   String username;
   String first_name;
   String last_name;
+
+  String select;
 
   _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -42,26 +42,48 @@ class AddKonsultasiState extends State<AddKonsultasi> {
         first_name = data['first_name'];
         last_name = data['last_name'];
         nim = data['nim'];
+        if (nim == null) {
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (BuildContext context) => KonsultasiScreen()));
+        }
       });
     }
   }
 
-  final String url = "https://sikapnew.tech/api/dosen";
+  // final String url = "https://sikapnew.tech/api/dosen";
 
-  List data = List(); //edited line
+  // List data = List(); //edited line
 
-  Future<String> getSWData() async {
-    var res = await http
-        .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
-    var resBody = json.decode(res.body)['dosen'];
+  // Future<String> getSWData() async {
+  //   var res = await http
+  //       .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
+  //   var resBody = json.decode(res.body)['dosen'];
 
-    setState(() {
-      data = resBody;
+  //   setState(() {
+  //     data = resBody;
+  //   });
+
+  //   print(resBody);
+
+  //   return "Success";
+  // }
+
+  String _baseUrl = "https://sikapnew.tech/api/";
+  String _valDosen;
+  List<dynamic> _dataDosen = List();
+  void getDosen() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    token = jsonDecode(localStorage.getString('token'))['token'];
+
+    final response = await http.get(_baseUrl + "dosen", headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
     });
-
-    print(resBody);
-
-    return "Success";
+    var listData = json.decode(response.body);
+    setState(() {
+      _dataDosen = listData;
+    });
+    print("data : $listData");
   }
 
   Future<Null> _selectDueDate(BuildContext context) async {
@@ -83,7 +105,8 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   @override
   void initState() {
     super.initState();
-    this.getSWData();
+    // this.getSWData();
+    getDosen();
     _loadUserData();
     tanggal = "${_dueDate.day}/${_dueDate.month}/${_dueDate.year}";
   }
@@ -147,24 +170,26 @@ class AddKonsultasiState extends State<AddKonsultasi> {
                 ),
               ),
               new ListTile(
-                leading: const Icon(Icons.person_add),
-                title: const Text('Dosen'),
-                trailing: new DropdownButton(
-                  items: data.map((item) {
-                    return new DropdownMenuItem(
-                      child: new Text(
-                          item['first_name'] + " " + item['last_name']),
-                      value: item['id'].toString(),
-                    );
-                  }).toList(),
-                  onChanged: (newVal) {
-                    setState(() {
-                      _mySelection = newVal;
-                    });
-                  },
-                  value: _mySelection,
-                ),
-              ),
+                  leading: const Icon(Icons.person_add),
+                  title: new DropdownButton(
+                    hint: Text("Pilih Dosen"),
+                    value: _valDosen,
+                    items: _dataDosen.map((item) {
+                      return DropdownMenuItem(
+                        child:
+                            Text(item['first_name'] + " " + item['last_name']),
+                        value: item['id'].toString(),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _valDosen = value;
+                      });
+                    },
+                  ),
+                  subtitle: new Text(
+                    "Kamu memilih Dosen $_valDosen",
+                  )),
               new FlatButton(
                   child: Padding(
                     padding:
@@ -195,15 +220,15 @@ class AddKonsultasiState extends State<AddKonsultasi> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     token = jsonDecode(localStorage.getString('token'))['token'];
     final String apiUrl = "https://sikapnew.tech/api";
-    String myUrl = "$apiUrl/konsultasi/";
+    String myUrl = "$apiUrl/konsultasi";
     http.post(myUrl, headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     }, body: {
       "judul": "$judul",
-      tanggal: "$tanggal",
+      "tanggal": "$tanggal",
       "keterangan": "$keterangan",
-      _mySelection: "$dosen_id",
+      _valDosen: "$dosen_id",
       nim: "$mahasiswa_id",
     }).then((response) {
       print('Response status : ${response.statusCode}');

@@ -13,6 +13,7 @@ import 'package:sikap/screens/login/login.dart';
 import 'package:sikap/network/rest_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sikap/screens/profil/profil.dart';
+import 'package:sikap/screens/konsultasi/konsuldosen.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -25,6 +26,7 @@ class _HomeState extends State<Home> {
   String last_name;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var token;
+  String nim;
 
   @override
   void initState() {
@@ -43,6 +45,7 @@ class _HomeState extends State<Home> {
 
         first_name = data['first_name'];
         last_name = data['last_name'];
+        nim = data['nim'];
       });
     }
   }
@@ -146,7 +149,12 @@ class _HomeState extends State<Home> {
                 leading: Icon(Icons.calendar_today),
                 title: Text('Konsultasi'),
                 onTap: () {
-                  konsultasi();
+                  if (nim == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => KonsulDosen()));
+                  } else {
+                    konsultasi();
+                  }
                 },
               ),
               ListTile(

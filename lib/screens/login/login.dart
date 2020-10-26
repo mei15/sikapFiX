@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/home/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,6 +56,7 @@ class _LoginState extends State<Login> {
                         "SIKAP",
                         style: TextStyle(
                           color: Colors.blueGrey,
+                          fontWeight: FontWeight.bold,
                           fontSize: 25,
                         ),
                       )),

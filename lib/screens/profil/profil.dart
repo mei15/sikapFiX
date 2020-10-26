@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/dosen/dosen.dart';
 import 'package:sikap/screens/home/home.dart';
+import 'package:sikap/screens/konsultasi/konsuldosen.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
 import 'package:sikap/screens/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,7 @@ class _ProfilState extends State<Profil> {
   String username;
   String first_name;
   String last_name;
+  String nim;
   @override
   void initState() {
     _loadUserData();
@@ -37,6 +39,7 @@ class _ProfilState extends State<Profil> {
         username = user['username'];
         first_name = data['first_name'];
         last_name = data['last_name'];
+        nim = data['nim'];
       });
     }
   }
@@ -113,7 +116,14 @@ class _ProfilState extends State<Profil> {
                     leading: Icon(Icons.calendar_today),
                     title: Text('Konsultasi'),
                     onTap: () {
-                      konsultasi();
+                      if (nim == null) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => KonsulDosen()));
+                      } else {
+                        konsultasi();
+                      }
                     },
                   ),
                   ListTile(

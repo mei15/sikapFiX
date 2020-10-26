@@ -12,12 +12,12 @@ import 'package:sikap/screens/mahasiswa/mahasiswa.dart';
 import 'package:sikap/screens/konsultasi/add.dart';
 import 'package:sikap/screens/profil/profil.dart';
 
-class KonsultasiScreen extends StatefulWidget {
+class KonsulDosen extends StatefulWidget {
   @override
-  _KonsultasiState createState() => _KonsultasiState();
+  _KonsulDosenState createState() => _KonsulDosenState();
 }
 
-class _KonsultasiState extends State<KonsultasiScreen> {
+class _KonsulDosenState extends State<KonsulDosen> {
   Network databaseHelper = new Network();
   String email;
   var datadariJSON;
@@ -40,6 +40,7 @@ class _KonsultasiState extends State<KonsultasiScreen> {
       setState(() {
         email = user['email'];
         nim = data['nim'];
+        if (nim == null) {}
       });
     }
   }
@@ -126,12 +127,6 @@ class _KonsultasiState extends State<KonsultasiScreen> {
           title: new Text("Konsultasi"),
           backgroundColor: Colors.blueGrey,
         ),
-        floatingActionButton: new FloatingActionButton(
-          child: new Icon(Icons.add),
-          onPressed: () => Navigator.of(context).push(new MaterialPageRoute(
-            builder: (BuildContext context) => new AddKonsultasi(),
-          )),
-        ),
         body: Card(
           child: FutureBuilder<List<dynamic>>(
             future: _fecthDataKonsultasi(),
@@ -146,10 +141,6 @@ class _KonsultasiState extends State<KonsultasiScreen> {
                             'Nama : ${snapshot.data[index]['mahasiswa']['first_name'] + " " + snapshot.data[index]['mahasiswa']['last_name']}'),
                         subtitle:
                             Text('Judul : ${snapshot.data[index]['judul']}'),
-                        onTap: () => edit(snapshot.data[index]['id']),
-                        trailing: new FlatButton(
-                            onPressed: () => delete(snapshot.data[index]['id']),
-                            child: new Icon(Icons.delete_outline_outlined)),
                       );
                     });
               } else {
@@ -171,28 +162,6 @@ class _KonsultasiState extends State<KonsultasiScreen> {
     }
   }
 
-  void delete(int id) async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    token = jsonDecode(localStorage.getString('token'))['token'];
-
-    final String apiUrl = "https://sikapnew.tech/api";
-    String myUrl = "$apiUrl/konsultasi/$id";
-    http.delete(myUrl, headers: {
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token'
-    }).then((response) {
-      print('Response body : ${response.body}');
-    });
-    Navigator.of(context).push(new MaterialPageRoute(
-      builder: (BuildContext context) => new KonsultasiScreen(),
-    ));
-  }
-
-  void edit(int id) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => EditKonsultasi()));
-  }
-
   void dosen() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => DosenScreen()));
@@ -209,7 +178,7 @@ class _KonsultasiState extends State<KonsultasiScreen> {
 
   void konsultasi() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => KonsultasiScreen()));
+        context, MaterialPageRoute(builder: (context) => KonsulDosen()));
   }
 
   void profil() {

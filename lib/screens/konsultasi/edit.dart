@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:select_form_field/select_form_field.dart';
@@ -21,13 +22,13 @@ class EditKonsultasiState extends State<EditKonsultasi> {
   String dosen_id = '';
   String mahasiswa_id = '';
 
-  String _mySelection;
-
   String email;
   String nim;
   String username;
   String first_name;
   String last_name;
+
+  String select;
 
   _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -41,26 +42,42 @@ class EditKonsultasiState extends State<EditKonsultasi> {
         first_name = data['first_name'];
         last_name = data['last_name'];
         nim = data['nim'];
+        if (nim == null) {
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (BuildContext context) => KonsultasiScreen()));
+        }
       });
     }
   }
 
-  final String url = "https://sikapnew.tech/api/dosen";
+  final String apiUrl = "https://sikapnew.tech/api/konsultasi";
 
-  List data = List(); //edited line
-
-  Future<String> getSWData() async {
-    var res = await http
-        .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
-    var resBody = json.decode(res.body)['dosen'];
-
-    setState(() {
-      data = resBody;
+  Future<List<dynamic>> _fecthDataKonsultasi() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    token = jsonDecode(localStorage.getString('token'))['token'];
+    var result = await http.get(apiUrl, headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
     });
+    return json.decode(result.body);
+  }
 
-    print(resBody);
+  String _baseUrl = "https://sikapnew.tech/api/";
+  String _valDosen;
+  List<dynamic> _dataDosen = List();
+  void getDosen() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    token = jsonDecode(localStorage.getString('token'))['token'];
 
-    return "Sucess";
+    final response = await http.get(_baseUrl + "dosen", headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    });
+    var listData = json.decode(response.body)['dosen'];
+    setState(() {
+      _dataDosen = listData;
+    });
+    print("data : $listData");
   }
 
   Future<Null> _selectDueDate(BuildContext context) async {
@@ -82,7 +99,8 @@ class EditKonsultasiState extends State<EditKonsultasi> {
   @override
   void initState() {
     super.initState();
-    this.getSWData();
+    // this.getSWData();
+    getDosen();
     _loadUserData();
     tanggal = "${_dueDate.day}/${_dueDate.month}/${_dueDate.year}";
   }
@@ -92,7 +110,7 @@ class EditKonsultasiState extends State<EditKonsultasi> {
     return new Scaffold(
         backgroundColor: Colors.blueGrey[50],
         appBar: AppBar(
-          title: Text("Ubah Konsultasi"),
+          title: Text("Tambah Konsultasi"),
           backgroundColor: Colors.blueGrey,
         ),
         body: Center(
@@ -109,6 +127,11 @@ class EditKonsultasiState extends State<EditKonsultasi> {
               new ListTile(
                 leading: const Icon(Icons.bookmark_border),
                 title: new TextField(
+                  onChanged: (String str) {
+                    setState(() {
+                      judul = str;
+                    });
+                  },
                   decoration: new InputDecoration(
                     hintText: "Judul",
                   ),
@@ -117,6 +140,11 @@ class EditKonsultasiState extends State<EditKonsultasi> {
               new ListTile(
                 leading: const Icon(Icons.library_books_outlined),
                 title: new TextField(
+                  onChanged: (String str) {
+                    setState(() {
+                      keterangan = str;
+                    });
+                  },
                   decoration: new InputDecoration(
                     hintText: "Keterangan",
                   ),
@@ -124,34 +152,44 @@ class EditKonsultasiState extends State<EditKonsultasi> {
               ),
               new ListTile(
                 leading: const Icon(Icons.today),
-                onTap: () => _selectDueDate(context),
-                title: const Text('Tanggal'),
-              ),
-              new ListTile(
-                leading: const Icon(Icons.person_add),
-                title: const Text('Dosen'),
-                trailing: new DropdownButton(
-                  items: data.map((item) {
-                    return new DropdownMenuItem(
-                      child: new Text(
-                          item['first_name'] + " " + item['last_name']),
-                      value: item['id'].toString(),
-                    );
-                  }).toList(),
-                  onChanged: (newVal) {
-                    setState(() {
-                      _mySelection = newVal;
-                    });
-                  },
-                  value: _mySelection,
+                title: Text("Tanggal Konsultasi"),
+                trailing: new InkWell(
+                  onTap: () => _selectDueDate(context),
+                  child: Text(
+                    tanggal,
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
               ),
+              new ListTile(
+                  leading: const Icon(Icons.person_add),
+                  title: new DropdownButton(
+                    hint: Text("Pilih Dosen"),
+                    value: _valDosen,
+                    items: _dataDosen.map((item) {
+                      return DropdownMenuItem(
+                        child:
+                            Text(item['first_name'] + " " + item['last_name']),
+                        value: item['id'].toString(),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _valDosen = value;
+                      });
+                    },
+                  ),
+                  subtitle: new Text(
+                    "Kamu memilih Dosen $_valDosen",
+                  )),
               new FlatButton(
                   child: Padding(
                     padding:
                         EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
                     child: Text(
-                      "Simpan Konsultasi",
+                      "Simpan",
                       textDirection: TextDirection.ltr,
                       style: TextStyle(
                         color: Colors.white,
@@ -165,27 +203,27 @@ class EditKonsultasiState extends State<EditKonsultasi> {
                   disabledColor: Colors.grey,
                   shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(20.0)),
-                  onPressed: () {})
+                  onPressed: () => editData($id)),
             ],
           ),
         ));
   }
 
   var token;
+  var $id;
   void editData(int id) async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     token = jsonDecode(localStorage.getString('token'))['token'];
     final String apiUrl = "https://sikapnew.tech/api";
-    String myUrl = "$apiUrl/konsultasi/";
-
+    String myUrl = "$apiUrl/konsultasi";
     http.post(myUrl, headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     }, body: {
       "judul": "$judul",
-      tanggal: "$tanggal",
+      "tanggal": "$tanggal",
       "keterangan": "$keterangan",
-      _mySelection: "$dosen_id",
+      "$_valDosen": "$dosen_id",
       nim: "$mahasiswa_id",
     }).then((response) {
       print('Response status : ${response.statusCode}');
