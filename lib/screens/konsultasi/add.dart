@@ -53,19 +53,36 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   String _baseUrl = "https://sikapnew.tech/api/";
   String _valDosen;
   List<dynamic> _dataDosen = List();
-  void getDosen() async {
+  // void getDosen() async {
+  //   SharedPreferences localStorage = await SharedPreferences.getInstance();
+  //   token = jsonDecode(localStorage.getString('token'))['token'];
+
+  //   final response = await http.get(_baseUrl + "dosen", headers: {
+  //     'Accept': 'application/json',
+  //     'Authorization': 'Bearer $token'
+  //   });
+  //   var listData = json.decode(response.body);
+  //   setState(() {
+  //     _dataDosen = listData;
+  //   });
+  //   print("data : $listData");
+  // }
+  int id;
+  void getDosen(int id) async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     token = jsonDecode(localStorage.getString('token'))['token'];
-
-    final response = await http.get(_baseUrl + "dosen", headers: {
+    final response = await http.post(_baseUrl + "dosen", headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
-    });
-    var listData = json.decode(response.body);
+    }, body: {
+      'dosen': id
+    }); //untuk melakukan request ke webservice
+
+    var listData = jsonDecode(response.body); //lalu kita decode hasil datanya
     setState(() {
-      _dataDosen = listData;
+      _dataDosen = listData; // dan kita set kedalam variable _dataCity
     });
-    print("data : $listData");
+    print("Data Dosen : $listData");
   }
 
   Future<Null> _selectDueDate(BuildContext context) async {
@@ -88,7 +105,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   void initState() {
     super.initState();
     // this.getSWData();
-    this.getDosen();
+    getDosen(id);
     _loadUserData();
     tanggal = "${_dueDate.day}/${_dueDate.month}/${_dueDate.year}";
   }
