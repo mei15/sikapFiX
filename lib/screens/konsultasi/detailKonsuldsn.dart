@@ -38,7 +38,7 @@ class _DetailKonsulState extends State<DetailKonsul> {
                     style: new TextStyle(fontSize: 18.0),
                   ),
                   new Text(
-                    "Dosen : ${widget.list[widget.index]['mahasiswa']['first_name'] + " " + widget.list[widget.index]['mahasiswa']['last_name']}",
+                    "Mahasiswa : ${widget.list[widget.index]['mahasiswa']['first_name'] + " " + widget.list[widget.index]['mahasiswa']['last_name']}",
                     style: new TextStyle(fontSize: 18.0),
                   ),
                   new Text(
