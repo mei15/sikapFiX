@@ -251,31 +251,4 @@ class AddKonsultasiState extends State<AddKonsultasi> {
       ));
     });
   }
-  // void addData() async {
-  //   SharedPreferences localStorage = await SharedPreferences.getInstance();
-  //   token = jsonDecode(localStorage.getString('token'))['token'];
-
-  //   var data = {
-  //     'judul': judul,
-  //     'keterangan': keterangan,
-  //     'tanggal': tanggal,
-  //     'dosen_id': dosen_id
-  //   };
-  //   print(data);
-
-  //   var res = await Network().postData(data, '/konsultasi/simpan');
-  //   var body = json.decode(res.body);
-  //   if (body['success']) {
-  //     print(data);
-  //     print('Response status : ${body.statusCode}');
-  //     print('Response body : ${res.body}');
-  //     Navigator.push(
-  //       context,
-  //       new MaterialPageRoute(builder: (context) => new KonsultasiScreen()),
-  //     );
-  //   } else {
-  //     print('Response status : ${body.statusCode}');
-  //     print('Response body : ${res.body}');
-  //   }
-  // }
 }

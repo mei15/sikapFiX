@@ -79,6 +79,14 @@ class _DetailState extends State<Detail> {
                     padding: const EdgeInsets.only(top: 30.0),
                   ),
                   new Text(
+                    "Mahasiswa : ${widget.list[widget.index]['mahasiswa']['first_name'] + " " + widget.list[widget.index]['mahasiswa']['last_name']}",
+                    style: new TextStyle(fontSize: 18.0),
+                  ),
+                  new Text(
+                    "Dosen : ${widget.list[widget.index]['dosen']['first_name'] + " " + widget.list[widget.index]['dosen']['last_name']}",
+                    style: new TextStyle(fontSize: 18.0),
+                  ),
+                  new Text(
                     "Judul : ${widget.list[widget.index]['judul']}",
                     style: new TextStyle(fontSize: 20.0),
                   ),
@@ -88,10 +96,6 @@ class _DetailState extends State<Detail> {
                   ),
                   new Text(
                     "Keterangan : ${widget.list[widget.index]['keterangan']}",
-                    style: new TextStyle(fontSize: 18.0),
-                  ),
-                  new Text(
-                    "Dosen : ${widget.list[widget.index]['dosen']['first_name'] + " " + widget.list[widget.index]['dosen']['last_name']}",
                     style: new TextStyle(fontSize: 18.0),
                   ),
                   new Padding(

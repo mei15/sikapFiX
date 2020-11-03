@@ -27,6 +27,7 @@ class _HomeState extends State<Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var token;
   String nim;
+  String nip;
 
   @override
   void initState() {
@@ -46,20 +47,13 @@ class _HomeState extends State<Home> {
         first_name = data['first_name'];
         last_name = data['last_name'];
         nim = data['nim'];
+        nip = data['nip'];
+        if (nim == null && nip == null) {
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (BuildContext context) => Login()));
+        }
       });
     }
-  }
-
-  final String apiUrl = "https://sikapnew.tech/api/konsultasi";
-
-  Future<List<dynamic>> _fecthDataKonsultasi() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    token = jsonDecode(localStorage.getString('token'))['token'];
-    var result = await http.get(apiUrl, headers: {
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token'
-    });
-    return json.decode(result.body);
   }
 
   _showMsg(msg) {

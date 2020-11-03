@@ -213,7 +213,7 @@ class _EditDataState extends State<EditData> {
                     padding:
                         EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
                     child: Text(
-                      "Tambah Konsultasi",
+                      "Simpan Konsultasi",
                       textDirection: TextDirection.ltr,
                       style: TextStyle(
                         color: Colors.white,
