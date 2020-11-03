@@ -181,6 +181,7 @@ class _LoginState extends State<Login> {
       localStorage.setString('token', json.encode(body['token']));
       localStorage.setString('user', json.encode(body['user']));
       localStorage.setString('data', json.encode(body['data']));
+      localStorage.setString('konsultasi', json.encode(body['konsultasi']));
       Navigator.push(
         context,
         new MaterialPageRoute(builder: (context) => Home()),

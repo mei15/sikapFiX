@@ -1,143 +1,140 @@
-// To parse this JSON data, do
-//
-//     final konsultasi = konsultasiFromJson(jsonString);
-
-import 'dart:convert';
-
-List<Konsultasi> konsultasiFromJson(String str) =>
-    List<Konsultasi>.from(json.decode(str).map((x) => Konsultasi.fromJson(x)));
-
-String konsultasiToJson(List<Konsultasi> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class Konsultasi {
-  Konsultasi({
-    this.id,
-    this.judul,
-    this.keterangan,
-    this.tanggal,
-    this.mahasiswaId,
-    this.dosenId,
-    this.createdAt,
-    this.updatedAt,
-    this.mahasiswa,
-    this.dosen,
-  });
-
-  String id;
+  int id;
   String judul;
   String keterangan;
-  DateTime tanggal;
+  String tanggal;
   String mahasiswaId;
   String dosenId;
-  dynamic createdAt;
-  dynamic updatedAt;
+  Null createdAt;
+  String updatedAt;
   Mahasiswa mahasiswa;
   Dosen dosen;
 
-  factory Konsultasi.fromJson(Map<String, dynamic> json) => Konsultasi(
-        id: json["id"].toString(),
-        judul: json["judul"],
-        keterangan: json["keterangan"],
-        tanggal: DateTime.parse(json["tanggal"]),
-        mahasiswaId: json["mahasiswa_id"].toString(),
-        dosenId: json["dosen_id"].toString(),
-        createdAt: json["created_at"],
-        updatedAt: json["updated_at"],
-        mahasiswa: Mahasiswa.fromJson(json["mahasiswa"]),
-        dosen: Dosen.fromJson(json["dosen"]),
-      );
+  Konsultasi(
+      {this.id,
+      this.judul,
+      this.keterangan,
+      this.tanggal,
+      this.mahasiswaId,
+      this.dosenId,
+      this.createdAt,
+      this.updatedAt,
+      this.mahasiswa,
+      this.dosen});
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "judul": judul,
-        "keterangan": keterangan,
-        "tanggal": tanggal.toIso8601String(),
-        "mahasiswa_id": mahasiswaId,
-        "dosen_id": dosenId,
-        "created_at": createdAt,
-        "updated_at": updatedAt,
-        "mahasiswa": mahasiswa.toJson(),
-        "dosen": dosen.toJson(),
-      };
+  Konsultasi.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    judul = json['judul'];
+    keterangan = json['keterangan'];
+    tanggal = json['tanggal'];
+    mahasiswaId = json['mahasiswa_id'];
+    dosenId = json['dosen_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    mahasiswa = json['mahasiswa'] != null
+        ? new Mahasiswa.fromJson(json['mahasiswa'])
+        : null;
+    dosen = json['dosen'] != null ? new Dosen.fromJson(json['dosen']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['judul'] = this.judul;
+    data['keterangan'] = this.keterangan;
+    data['tanggal'] = this.tanggal;
+    data['mahasiswa_id'] = this.mahasiswaId;
+    data['dosen_id'] = this.dosenId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.mahasiswa != null) {
+      data['mahasiswa'] = this.mahasiswa.toJson();
+    }
+    if (this.dosen != null) {
+      data['dosen'] = this.dosen.toJson();
+    }
+    return data;
+  }
+}
+
+class Mahasiswa {
+  int id;
+  String prodi;
+  String nim;
+  String firstName;
+  String lastName;
+  String createdAt;
+  Null updatedAt;
+
+  Mahasiswa(
+      {this.id,
+      this.prodi,
+      this.nim,
+      this.firstName,
+      this.lastName,
+      this.createdAt,
+      this.updatedAt});
+
+  Mahasiswa.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    prodi = json['prodi'];
+    nim = json['nim'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['prodi'] = this.prodi;
+    data['nim'] = this.nim;
+    data['first_name'] = this.firstName;
+    data['last_name'] = this.lastName;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
 }
 
 class Dosen {
-  Dosen({
-    this.id,
-    this.prodi,
-    this.nip,
-    this.firstName,
-    this.lastName,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  String id;
+  int id;
   String prodi;
   String nip;
   String firstName;
   String lastName;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String createdAt;
+  String updatedAt;
 
-  factory Dosen.fromJson(Map<String, dynamic> json) => Dosen(
-        id: json["id"].toString(),
-        prodi: json["prodi"],
-        nip: json["nip"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-      );
+  Dosen(
+      {this.id,
+      this.prodi,
+      this.nip,
+      this.firstName,
+      this.lastName,
+      this.createdAt,
+      this.updatedAt});
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "prodi": prodi,
-        "nip": nip,
-        "first_name": firstName,
-        "last_name": lastName,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-      };
-}
+  Dosen.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    prodi = json['prodi'];
+    nip = json['nip'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
 
-class Mahasiswa {
-  Mahasiswa({
-    this.id,
-    this.prodi,
-    this.firstName,
-    this.lastName,
-    this.createdAt,
-    this.updatedAt,
-    this.nim,
-  });
-
-  String id;
-  String prodi;
-  String firstName;
-  String lastName;
-  DateTime createdAt;
-  dynamic updatedAt;
-  String nim;
-
-  factory Mahasiswa.fromJson(Map<String, dynamic> json) => Mahasiswa(
-        id: json["id"].toString(),
-        prodi: json["prodi"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        nim: json["nim"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "prodi": prodi,
-        "first_name": firstName,
-        "last_name": lastName,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "nim": nim,
-      };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['prodi'] = this.prodi;
+    data['nip'] = this.nip;
+    data['first_name'] = this.firstName;
+    data['last_name'] = this.lastName;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
 }

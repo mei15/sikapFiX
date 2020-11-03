@@ -210,7 +210,7 @@ class _HomeState extends State<Home> {
                           children: <Widget>[
                             Container(
                               child: Text(
-                                '$first_name' '$last_name',
+                                "$first_name " " $last_name",
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontSize: 22.0,
@@ -254,7 +254,7 @@ class _HomeState extends State<Home> {
                           icon: Icons.pages_outlined,
                           iconBackgroundColor: LightColors.kRed,
                           title: 'Selamat Datang di SIKAP!',
-                          subtitle: '$first_name' '$last_name',
+                          subtitle: "$first_name " " $last_name",
                         ),
                       ],
                     ),
@@ -274,6 +274,7 @@ class _HomeState extends State<Home> {
       localStorage.remove('user');
       localStorage.remove('token');
       localStorage.remove('data');
+
       Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
     }
   }

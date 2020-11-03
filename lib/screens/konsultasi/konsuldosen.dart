@@ -23,7 +23,7 @@ class _KonsulDosenState extends State<KonsulDosen> {
   var datadariJSON;
 
   var token;
-  String nim;
+  String nip;
 
   @override
   void initState() {
@@ -39,8 +39,8 @@ class _KonsulDosenState extends State<KonsulDosen> {
     if (user != null && data != null) {
       setState(() {
         email = user['email'];
-        nim = data['nim'];
-        if (nim == null) {}
+        nip = data['nip'];
+        if (nip == null) {}
       });
     }
   }
