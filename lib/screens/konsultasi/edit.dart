@@ -133,7 +133,7 @@ class _EditDataState extends State<EditData> {
     return new Scaffold(
         backgroundColor: Colors.blueGrey[50],
         appBar: AppBar(
-          title: Text("Tambah Konsultasi"),
+          title: Text("Ubah Konsultasi"),
           backgroundColor: Colors.blueGrey,
         ),
         body: Center(
@@ -238,7 +238,7 @@ class _EditDataState extends State<EditData> {
     token = jsonDecode(localStorage.getString('token'))['token'];
     final String apiUrl = "https://sikapnew.tech/api";
     String myUrl = "$apiUrl/konsultasi/ubah/$id";
-    http.post(myUrl, headers: {
+    http.put(myUrl, headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     }, body: {
@@ -255,31 +255,4 @@ class _EditDataState extends State<EditData> {
       ));
     });
   }
-  // void addData() async {
-  //   SharedPreferences localStorage = await SharedPreferences.getInstance();
-  //   token = jsonDecode(localStorage.getString('token'))['token'];
-
-  //   var data = {
-  //     'judul': judul,
-  //     'keterangan': keterangan,
-  //     'tanggal': tanggal,
-  //     'dosen_id': dosen_id
-  //   };
-  //   print(data);
-
-  //   var res = await Network().postData(data, '/konsultasi/simpan');
-  //   var body = json.decode(res.body);
-  //   if (body['success']) {
-  //     print(data);
-  //     print('Response status : ${body.statusCode}');
-  //     print('Response body : ${res.body}');
-  //     Navigator.push(
-  //       context,
-  //       new MaterialPageRoute(builder: (context) => new KonsultasiScreen()),
-  //     );
-  //   } else {
-  //     print('Response status : ${body.statusCode}');
-  //     print('Response body : ${res.body}');
-  //   }
-  // }
 }
