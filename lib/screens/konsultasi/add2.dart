@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:sikap/model/konsultasi.dart';
-import 'package:sikap/network/rest_api.dart';
-import 'package:sikap/screens/konsultasi/add2.dart';
 import 'package:sikap/screens/konsultasi/konsuldosen.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:select_form_field/select_form_field.dart';
 
-class AddKonsultasi extends StatefulWidget {
+class AddKonsul extends StatefulWidget {
   @override
-  AddKonsultasiState createState() => AddKonsultasiState();
+  AddKonsulState createState() => AddKonsulState();
 }
 
-class AddKonsultasiState extends State<AddKonsultasi> {
+class AddKonsulState extends State<AddKonsul> {
   DateTime _dueDate = DateTime.now();
   DateTime dateNow = DateTime.now();
   String tanggal = '';
 
+  String judul;
   String keterangan;
   String dosen_id;
   String mahasiswa_id;
@@ -27,14 +24,12 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   String email;
   String nim;
   String username;
-  String first;
-  String last;
+  String first_name;
+  String last_name;
+  String fname;
   String lname;
-  String judul;
-  String nip;
 
   String select;
-  String fname;
 
   var token;
 
@@ -47,8 +42,8 @@ class AddKonsultasiState extends State<AddKonsultasi> {
       setState(() {
         email = user['email'];
         username = user['username'];
-        first = data['first_name'];
-        last = data['last_name'];
+        first_name = data['first_name'];
+        last_name = data['last_name'];
         nim = data['nim'];
         if (nim == null) {
           Navigator.of(context).push(new MaterialPageRoute(
@@ -58,21 +53,41 @@ class AddKonsultasiState extends State<AddKonsultasi> {
     }
   }
 
-  _loadKonsulData() async {
+  String _baseUrl = "https://sikapnew.tech/api/konsultasi/";
+  String _valDosen;
+  List<dynamic> _dataDosen = List();
+  void getDosen() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var konsul = jsonDecode(localStorage.getString('konsultasi'));
+    token = jsonDecode(localStorage.getString('token'))['token'];
 
-    if (konsul != null) {
-      judul = konsul[0]['judul'];
-      if (judul == null) {
-        Navigator.of(context).push(new MaterialPageRoute(
-            builder: (BuildContext context) => AddKonsul()));
-      }
-      fname = konsul[0]['dosen']['first_name'];
-      lname = konsul[0]['dosen']['last_name'];
-      nip = konsul[0]['dosen']['nip'];
-      dosen_id = konsul[0]['dosen_id'];
-    }
+    final response = await http.get(_baseUrl + "tambah", headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }); //untuk melakukan request ke webservice
+
+    var listData = json.decode(response.body); //lalu kita decode hasil datanya
+    setState(() {
+      _dataDosen = listData; // dan kita set kedalam variable _dataDosen
+    });
+    print("Data Dosen : $listData");
+  }
+
+  String values;
+  List<dynamic> data = List();
+  void getKonsul() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    token = jsonDecode(localStorage.getString('token'))['token'];
+
+    final response = await http.get(_baseUrl, headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }); //untuk melakukan request ke webservice
+
+    var listData = json.decode(response.body); //lalu kita decode hasil datanya
+    setState(() {
+      data = listData; // dan kita set kedalam variable _dataDosen
+    });
+    print("Data Dosen : $listData");
   }
 
   Future<Null> _selectDueDate(BuildContext context) async {
@@ -94,8 +109,10 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   @override
   void initState() {
     super.initState();
+    // this.getSWData();
+    getDosen();
     _loadUserData();
-    _loadKonsulData();
+    getKonsul();
     tanggal = "${_dueDate.year}-${_dueDate.month}-${_dueDate.day}";
   }
 
@@ -113,23 +130,44 @@ class AddKonsultasiState extends State<AddKonsultasi> {
               new ListTile(
                   leading: const Icon(Icons.person),
                   title: new Text(
-                    "Nama Mahasiswa : $first  $last",
+                    "Nama Mahasiswa : $first_name  $last_name",
                   ),
                   subtitle: new Text(
                     "NIM :$nim",
                   )),
               new ListTile(
                   leading: const Icon(Icons.person_add),
-                  title: new Text(
-                    "Nama Dosen : $fname  $lname",
+                  title: new DropdownButton(
+                    hint: Text("Pilih Dosen"),
+                    value: _valDosen,
+                    items: _dataDosen.map((item) {
+                      return DropdownMenuItem(
+                        child: new Text(
+                            item['first_name'] + " " + item['last_name']),
+                        value: item['id'].toString(),
+                      );
+                    }).toList(),
+                    onChanged: (String value) {
+                      setState(() {
+                        dosen_id = value;
+                        _valDosen = value;
+                      });
+                    },
                   ),
                   subtitle: new Text(
-                    "$dosen_id",
+                    "Kamu memilih Dosen $_valDosen",
                   )),
               new ListTile(
-                leading: const Icon(Icons.person_add),
-                title: new Text(
-                  "Judul : $judul",
+                leading: const Icon(Icons.bookmark_border),
+                title: new TextField(
+                  onChanged: (String str) {
+                    setState(() {
+                      judul = str;
+                    });
+                  },
+                  decoration: new InputDecoration(
+                    hintText: "Judul",
+                  ),
                 ),
               ),
               new ListTile(

@@ -27,26 +27,18 @@ class _EditDataState extends State<EditData> {
   String keterangan;
   String dosen_id;
   String mahasiswa_id;
+  String nip;
 
   String email;
   String nim;
   String username;
   String first_name;
   String last_name;
-
+  String fname;
+  String lname;
   String select;
 
   var token;
-  final String apiUrl = "https://sikapnew.tech/api/konsultasi";
-  Future<List> getData() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    token = jsonDecode(localStorage.getString('token'))['token'];
-    var result = await http.get(apiUrl, headers: {
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token'
-    });
-    return json.decode(result.body);
-  }
 
   Future<Konsultasi> fetchData() async {
     final response = await http.get('https://sikapnew.tech/api/konsultasi');
@@ -58,10 +50,6 @@ class _EditDataState extends State<EditData> {
       // If that call was not successful, throw an error.
       throw Exception('Failed to load post');
     }
-  }
-
-  Future<http.Response> response() {
-    return http.get('https://sikapnew.tech/api/konsultasi');
   }
 
   _loadUserData() async {
@@ -84,21 +72,36 @@ class _EditDataState extends State<EditData> {
     }
   }
 
+  _loadKonsulData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var konsul = jsonDecode(localStorage.getString('konsultasi'));
+
+    if (konsul != null) {
+      judul = konsul[0]['judul'];
+
+      fname = konsul[0]['dosen']['first_name'];
+      lname = konsul[0]['dosen']['last_name'];
+      nip = konsul[0]['dosen']['nip'];
+      dosen_id = konsul[0]['dosen_id'];
+    }
+  }
+
   String _baseUrl = "https://sikapnew.tech/api/konsultasi/";
-  String _valDosen;
-  List<dynamic> _dataDosen = List();
+  String values;
+  String val;
+  List<dynamic> data = List();
   void getDosen() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     token = jsonDecode(localStorage.getString('token'))['token'];
 
-    final response = await http.get(_baseUrl + "tambah", headers: {
+    final response = await http.get(_baseUrl, headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     }); //untuk melakukan request ke webservice
 
     var listData = json.decode(response.body); //lalu kita decode hasil datanya
     setState(() {
-      _dataDosen = listData; // dan kita set kedalam variable _dataDosen
+      data = listData; // dan kita set kedalam variable _dataDosen
     });
     print("Data Dosen : $listData");
   }
@@ -125,6 +128,7 @@ class _EditDataState extends State<EditData> {
     // this.getSWData();
     getDosen();
     _loadUserData();
+    _loadKonsulData();
     tanggal = "${_dueDate.year}-${_dueDate.month}-${_dueDate.day}";
   }
 
@@ -149,37 +153,16 @@ class _EditDataState extends State<EditData> {
                   )),
               new ListTile(
                   leading: const Icon(Icons.person_add),
-                  title: new DropdownButton(
-                    hint: Text("Pilih Dosen"),
-                    value: _valDosen,
-                    items: _dataDosen.map((item) {
-                      return DropdownMenuItem(
-                        child:
-                            Text(item['first_name'] + " " + item['last_name']),
-                        value: item['id'].toString(),
-                      );
-                    }).toList(),
-                    onChanged: (String value) {
-                      setState(() {
-                        dosen_id = value;
-                        _valDosen = value;
-                      });
-                    },
+                  title: new Text(
+                    "Nama Dosen : $fname  $lname",
                   ),
                   subtitle: new Text(
-                    "Kamu memilih Dosen $_valDosen",
+                    "$dosen_id",
                   )),
               new ListTile(
-                leading: const Icon(Icons.bookmark_border),
-                title: new TextField(
-                  onChanged: (String str) {
-                    setState(() {
-                      judul = str;
-                    });
-                  },
-                  decoration: new InputDecoration(
-                    hintText: "Judul",
-                  ),
+                leading: const Icon(Icons.person_add),
+                title: new Text(
+                  "Judul : $judul",
                 ),
               ),
               new ListTile(
@@ -191,7 +174,8 @@ class _EditDataState extends State<EditData> {
                     });
                   },
                   decoration: new InputDecoration(
-                    hintText: "Keterangan",
+                    hintText:
+                        "Keterangan ${widget.list[widget.index]['keterangan']}",
                   ),
                 ),
               ),

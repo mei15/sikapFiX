@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import './edit.dart';
 import 'package:http/http.dart' as http;
 import './konsultasi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:date_format/date_format.dart';
 
 class Detail extends StatefulWidget {
   List list;
@@ -30,6 +32,14 @@ class _DetailState extends State<Detail> {
     Navigator.of(context).push(new MaterialPageRoute(
       builder: (BuildContext context) => new KonsultasiScreen(),
     ));
+  }
+
+  String tanggal;
+
+  void convert() {
+    final tanggal = DateTime.now();
+
+    print(formatDate(tanggal, [dd, '-', mm, '-', yyyy]));
   }
 
   void confirm() {
@@ -90,10 +100,8 @@ class _DetailState extends State<Detail> {
                     "Judul : ${widget.list[widget.index]['judul']}",
                     style: new TextStyle(fontSize: 20.0),
                   ),
-                  new Text(
-                    "Tanggal : ${widget.list[widget.index]['tanggal']}",
-                    style: new TextStyle(fontSize: 18.0),
-                  ),
+                  new Text("Tanggal : ${widget.list[widget.index]['tanggal']}",
+                      style: new TextStyle(fontSize: 18.0)),
                   new Text(
                     "Keterangan : ${widget.list[widget.index]['keterangan']}",
                     style: new TextStyle(fontSize: 18.0),

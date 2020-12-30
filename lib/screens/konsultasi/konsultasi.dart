@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sikap/screens/mahasiswa/mahasiswa.dart';
 import 'package:sikap/screens/konsultasi/add.dart';
 import 'package:sikap/screens/profil/profil.dart';
+import 'package:intl/intl.dart';
 
 class KonsultasiScreen extends StatefulWidget {
   @override
@@ -210,7 +211,7 @@ class ItemList extends StatelessWidget {
       itemCount: list == null ? 0 : list.length,
       itemBuilder: (context, i) {
         return new Container(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(5.0),
           child: new GestureDetector(
             onTap: () => Navigator.of(context).push(new MaterialPageRoute(
                 builder: (BuildContext context) => new Detail(
