@@ -1,6 +1,6 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
-import 'package:sikap/model/konsultasi.dart';
-import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/konsultasi/add2.dart';
 import 'package:sikap/screens/konsultasi/konsuldosen.dart';
 import 'package:sikap/screens/konsultasi/konsultasi.dart';
@@ -8,7 +8,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:select_form_field/select_form_field.dart';
 
 class AddKonsultasi extends StatefulWidget {
   @override
@@ -42,8 +41,9 @@ class AddKonsultasiState extends State<AddKonsultasi> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
     var data = jsonDecode(localStorage.getString('data'));
+    var konsul = jsonDecode(localStorage.getString('konsultasi'));
 
-    if (user != null && data != null) {
+    if (user != null && data != null && konsul != null) {
       setState(() {
         email = user['email'];
         username = user['username'];
@@ -54,25 +54,31 @@ class AddKonsultasiState extends State<AddKonsultasi> {
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (BuildContext context) => KonsulDosen()));
         }
+        fname = konsul['dosen']['first_name'];
+        lname = konsul['dosen']['last_name'];
+        judul = konsul['judul'];
+        dosen_id = konsul['dosen_id'];
       });
     }
   }
 
-  _loadKonsulData() async {
+  String _baseUrl = "https://sikapnew.tech/api/konsultasi/";
+  String _valDosen;
+  List<dynamic> _dataDosen = List();
+  void getDosen() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var konsul = jsonDecode(localStorage.getString('konsultasi'));
+    token = jsonDecode(localStorage.getString('token'))['token'];
 
-    if (konsul != null) {
-      judul = konsul[0]['judul'];
-      if (judul == null) {
-        Navigator.of(context).push(new MaterialPageRoute(
-            builder: (BuildContext context) => AddKonsul()));
-      }
-      fname = konsul[0]['dosen']['first_name'];
-      lname = konsul[0]['dosen']['last_name'];
-      nip = konsul[0]['dosen']['nip'];
-      dosen_id = konsul[0]['dosen_id'];
-    }
+    final response = await http.get(_baseUrl + "tambah", headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }); //untuk melakukan request ke webservice
+
+    var listData = json.decode(response.body); //lalu kita decode hasil datanya
+    setState(() {
+      _dataDosen = listData; // dan kita set kedalam variable _dataDosen
+    });
+    print("Data Dosen : $listData");
   }
 
   Future<Null> _selectDueDate(BuildContext context) async {
@@ -95,7 +101,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
   void initState() {
     super.initState();
     _loadUserData();
-    _loadKonsulData();
+    getDosen();
     tanggal = "${_dueDate.year}-${_dueDate.month}-${_dueDate.day}";
   }
 
@@ -113,7 +119,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
               new ListTile(
                   leading: const Icon(Icons.person),
                   title: new Text(
-                    "Nama Mahasiswa : $first  $last",
+                    "Nama : $first  $last",
                   ),
                   subtitle: new Text(
                     "NIM :$nim",
@@ -127,7 +133,7 @@ class AddKonsultasiState extends State<AddKonsultasi> {
                     "$dosen_id",
                   )),
               new ListTile(
-                leading: const Icon(Icons.person_add),
+                leading: const Icon(Icons.bookmark_border),
                 title: new Text(
                   "Judul : $judul",
                 ),

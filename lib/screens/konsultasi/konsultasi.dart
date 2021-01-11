@@ -5,13 +5,13 @@ import 'package:sikap/network/rest_api.dart';
 import 'package:sikap/screens/dosen/dosen.dart';
 import 'package:sikap/screens/home/home.dart';
 import 'package:sikap/screens/konsultasi/Detail.dart';
+import 'package:sikap/screens/konsultasi/add2.dart';
 import 'package:sikap/screens/konsultasi/edit.dart';
 import 'package:sikap/screens/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sikap/screens/mahasiswa/mahasiswa.dart';
 import 'package:sikap/screens/konsultasi/add.dart';
 import 'package:sikap/screens/profil/profil.dart';
-import 'package:intl/intl.dart';
 
 class KonsultasiScreen extends StatefulWidget {
   @override
@@ -23,6 +23,7 @@ class _KonsultasiState extends State<KonsultasiScreen> {
   var datadariJSON;
 
   String nim;
+  String judul;
 
   @override
   void initState() {
@@ -35,11 +36,13 @@ class _KonsultasiState extends State<KonsultasiScreen> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
     var data = jsonDecode(localStorage.getString('data'));
+    var konsul = jsonDecode(localStorage.getString('konsultasi'));
 
-    if (user != null && data != null) {
+    if (user != null && data != null && konsul != null) {
       setState(() {
         email = user['email'];
         nim = data['nim'];
+        judul = konsul['judul'];
       });
     }
   }
@@ -128,9 +131,9 @@ class _KonsultasiState extends State<KonsultasiScreen> {
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.add),
-        onPressed: () => Navigator.of(context).push(new MaterialPageRoute(
-          builder: (BuildContext context) => new AddKonsultasi(),
-        )),
+        onPressed: () {
+          konsul();
+        },
       ),
       body: new FutureBuilder<List>(
         future: getData(),
@@ -152,6 +155,16 @@ class _KonsultasiState extends State<KonsultasiScreen> {
   void dosen() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => DosenScreen()));
+  }
+
+  void konsul() {
+    if (judul == null) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddKonsul()));
+    } else {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddKonsultasi()));
+    }
   }
 
   void mahasiswa() {

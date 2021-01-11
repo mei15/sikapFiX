@@ -28,6 +28,7 @@ class _HomeState extends State<Home> {
   var token;
   String nim;
   String nip;
+  String konsul;
 
   @override
   void initState() {
@@ -43,7 +44,6 @@ class _HomeState extends State<Home> {
     if (user != null && data != null) {
       setState(() {
         email = user['email'];
-
         first_name = data['first_name'];
         last_name = data['last_name'];
         nim = data['nim'];
@@ -146,7 +146,14 @@ class _HomeState extends State<Home> {
                   if (nim == null) {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => KonsulDosen()));
-                  } else {
+                  }
+                  // else if (konsul == null) {
+                  //   Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //           builder: (context) => KonsultasiAScreen()));
+                  // }
+                  else {
                     konsultasi();
                   }
                 },
